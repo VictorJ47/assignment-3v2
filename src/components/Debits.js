@@ -1,33 +1,63 @@
-/*==================================================
-src/components/Debits.js
+import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 
-The Debits component contains information for Debits page view.
-Note: You need to work on this file for the Assignment.
-==================================================*/
-import {Link} from 'react-router-dom';
+function Debits({ debits, addDebit, accountBalance }) {
+  const [description, setDescription] = useState('');
+  const [amount, setAmount] = useState('');
 
-const Debits = (props) => {
-  // Create the list of Debit items
-  let debitsView = () => {
-    const { debits } = props;
-    return debits.map((debit) => {  // Extract "id", "amount", "description" and "date" properties of each debits JSON array element
-      let date = debit.date.slice(0,10);
-      return <li key={debit.id}>{debit.amount} {debit.description} {date}</li>
-    });
-  }
-  // Render the list of Debit items and a form to input new Debit item
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const newDebit = {
+      description,
+      amount: parseFloat(amount),
+      date: new Date().toISOString(),
+    };
+
+    addDebit(newDebit);
+
+    // Clear form
+    setDescription('');
+    setAmount('');
+  };
+
   return (
     <div>
       <h1>Debits</h1>
+      <h3>Account Balance: ${accountBalance.toFixed(2)}</h3>
 
-      {debitsView()}
-
-      <form onSubmit={props.addDebit}>
-        <input type="text" name="description" />
-        <input type="number" name="amount" />
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>Description: </label>
+          <input 
+            type="text" 
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)} 
+            required 
+          />
+        </div>
+        <div>
+          <label>Amount: </label>
+          <input 
+            type="number" 
+            step="0.01"
+            value={amount} 
+            onChange={(e) => setAmount(e.target.value)} 
+            required 
+          />
+        </div>
         <button type="submit">Add Debit</button>
       </form>
-      <br/>
+
+      <h2>Debit History:</h2>
+      <ul>
+        {debits.map((debit, index) => (
+          <li key={index}>
+            <strong>{debit.description}</strong> - ${debit.amount.toFixed(2)} on {new Date(debit.date).toLocaleDateString()}
+          </li>
+        ))}
+      </ul>
+
       <Link to="/">Return to Home</Link>
     </div>
   );

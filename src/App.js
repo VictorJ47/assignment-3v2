@@ -28,6 +28,37 @@ class App extends Component {
     };
   }
 
+  async componentDidMount() {
+    try {
+      const creditsResponse = await fetch("https://moj-api.herokuapp.com/credits");
+      const debitsResponse = await fetch("https://moj-api.herokuapp.com/debits");
+  
+      const creditList = await creditsResponse.json();
+      const debitList = await debitsResponse.json();
+  
+      const creditTotal = creditList.reduce((sum, item) => sum + item.amount, 0);
+      const debitTotal = debitList.reduce((sum, item) => sum + item.amount, 0);
+      const accountBalance = creditTotal - debitTotal;
+  
+      this.setState({ creditList, debitList, accountBalance });
+    } catch (error) {
+      console.error("Error fetching data:", error);
+    }
+  }
+
+  addCredit = (credit) => {
+    const updatedCredits = [...this.state.creditList, credit];
+    const newBalance = this.state.accountBalance + credit.amount;
+    this.setState({ creditList: updatedCredits, accountBalance: newBalance });
+  }
+  
+  addDebit = (debit) => {
+    const updatedDebits = [...this.state.debitList, debit];
+    const newBalance = this.state.accountBalance - debit.amount;
+    this.setState({ debitList: updatedDebits, accountBalance: newBalance });
+  }
+  
+
   // Update state's currentUser (userName) after "Log In" button is clicked
   mockLogIn = (logInInfo) => {  
     const newUser = {...this.state.currentUser};
@@ -43,8 +74,23 @@ class App extends Component {
       <UserProfile userName={this.state.currentUser.userName} memberSince={this.state.currentUser.memberSince} />
     )
     const LogInComponent = () => (<LogIn user={this.state.currentUser} mockLogIn={this.mockLogIn} />)
-    const CreditsComponent = () => (<Credits credits={this.state.creditList} />) 
-    const DebitsComponent = () => (<Debits debits={this.state.debitList} />) 
+
+    const CreditsComponent = () => (
+      <Credits 
+        credits={this.state.creditList} 
+        addCredit={this.addCredit}
+        accountBalance={this.state.accountBalance}
+      />
+    );
+
+
+    const DebitsComponent = () => (
+      <Debits 
+        debits={this.state.debitList} 
+        addDebit={this.addDebit}
+        accountBalance={this.state.accountBalance}
+      />
+    );
 
     // Important: Include the "basename" in Router, which is needed for deploying the React app to GitHub Pages
     return (

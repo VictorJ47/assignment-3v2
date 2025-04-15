@@ -1,32 +1,22 @@
-/*==================================================
-src/components/Home.js
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-The Home component is used to demonstrate the use of Link.
-==================================================*/
-import React, {Component} from 'react';
-import AccountBalance from './AccountBalance';
-import {Link} from 'react-router-dom';
+function Home({ accountBalance }) {
+  return (
+    <div>
+      <h1>Welcome to Bank of React!</h1>
+      <h3>Account Balance: ${accountBalance.toFixed(2)}</h3>
 
-class Home extends Component {
-  render() {
-    return (
-      <div>
-        <img src="https://picsum.photos/200/200" alt="bank"/>
-
-        <h1>Bank of React</h1>
-
-        <Link to="/userProfile">User Profile</Link>
-        <br/>
-        <Link to="/login">Login</Link>
-        <br/>
-        <Link to="/credits">Credits (to be implemented in the Assignment)</Link>
-        <br/>
-        <Link to="/debits">Debits (to be implemented in the Assignment)</Link>
-        <br/><br/>
-        <AccountBalance accountBalance={this.props.accountBalance}/>
-      </div>
-    );
-  }
+      <nav>
+        <ul>
+          <li><Link to="/credits">View Credits</Link></li>
+          <li><Link to="/debits">View Debits</Link></li>
+          <li><Link to="/userProfile">View Profile</Link></li>
+          <li><Link to="/login">Log In</Link></li>
+        </ul>
+      </nav>
+    </div>
+  );
 }
 
 export default Home;
